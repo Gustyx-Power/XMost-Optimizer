@@ -3,7 +3,7 @@ mod memory;
 mod tweaker;
 mod gpu;
 use system::{HardwareInfo, SystemMonitor, SystemStats};
-use memory::{AutoPurger, purge_standby_list};
+use memory::{AutoPurger, purge_standby_list, MemoryMetrics, PagefileMetrics, get_memory_metrics, get_pagefile_metrics, get_timer_resolution};
 use tauri::State;
 
 #[tauri::command]
@@ -32,10 +32,11 @@ fn purge_memory_now() -> Result<(), String> {
 }
 
 #[tauri::command]
-fn set_auto_purge_threshold(state: State<'_, AutoPurger>, mb: u64) {
+fn set_auto_purge_config(state: State<'_, AutoPurger>, standby_mb: u64, free_mb: u64) {
     let mut s = state.state.lock().unwrap();
-    s.threshold_mb = mb;
-    log::info!("Auto-purge threshold set to {} MB", mb);
+    s.standby_threshold_mb = standby_mb;
+    s.free_memory_threshold_mb = free_mb;
+    log::info!("Auto-purge config: Standby >= {} MB, Free < {} MB", standby_mb, free_mb);
 }
 
 #[tauri::command]
@@ -46,9 +47,24 @@ fn toggle_auto_purge(state: State<'_, AutoPurger>, enabled: bool) {
 }
 
 #[tauri::command]
-fn get_auto_purge_state(state: State<'_, AutoPurger>) -> (bool, u64) {
+fn get_auto_purge_state(state: State<'_, AutoPurger>) -> (bool, u64, u64) {
     let s = state.state.lock().unwrap();
-    (s.enabled, s.threshold_mb)
+    (s.enabled, s.standby_threshold_mb, s.free_memory_threshold_mb)
+}
+
+#[tauri::command]
+fn get_memory_telemetry() -> Result<MemoryMetrics, String> {
+    get_memory_metrics()
+}
+
+#[tauri::command]
+fn get_pagefile_telemetry() -> Result<PagefileMetrics, String> {
+    get_pagefile_metrics()
+}
+
+#[tauri::command]
+fn get_timer_resolution_ms() -> Result<f64, String> {
+    get_timer_resolution()
 }
 
 #[tauri::command]
@@ -88,7 +104,8 @@ pub fn run() {
     .manage(AutoPurger::new())
     .invoke_handler(tauri::generate_handler![
         get_hardware_info, get_system_stats,
-        purge_memory_now, set_auto_purge_threshold, toggle_auto_purge, get_auto_purge_state,
+        purge_memory_now, set_auto_purge_config, toggle_auto_purge, get_auto_purge_state,
+        get_memory_telemetry, get_pagefile_telemetry, get_timer_resolution_ms,
         apply_ultimate_power_plan, apply_core_parking_disable,
         fetch_hags_status, apply_hags_setting
     ])
