@@ -2,6 +2,8 @@
 	import '../app.css';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import { dialog } from '$lib/dialog.svelte';
+	import { locale } from '$lib/locale.svelte';
 
 	let { children } = $props();
 	let isDark = $state(true); // Default to dark theme
@@ -54,7 +56,7 @@
 					</svg>
 				</div>
 				<span class="text-[10px] font-sans font-medium tracking-wide mt-1.5 transition-colors duration-200 { $page.url.pathname === '/' ? 'text-accent-cyan font-bold' : 'text-text-secondary group-hover:text-text-primary' }">
-					Monitor
+					{locale.t('nav.monitor')}
 				</span>
 			</a>
 
@@ -72,7 +74,7 @@
 					</svg>
 				</div>
 				<span class="text-[10px] font-sans font-medium tracking-wide mt-1.5 transition-colors duration-200 { $page.url.pathname.startsWith('/memory') ? 'text-accent-cyan font-bold' : 'text-text-secondary group-hover:text-text-primary' }">
-					Memory
+					{locale.t('nav.memory')}
 				</span>
 			</a>
 
@@ -92,7 +94,7 @@
 					</svg>
 				</div>
 				<span class="text-[10px] font-sans font-medium tracking-wide mt-1.5 transition-colors duration-200 { $page.url.pathname.startsWith('/os-tweaker') ? 'text-accent-cyan font-bold' : 'text-text-secondary group-hover:text-text-primary' }">
-					Tweaker
+					{locale.t('nav.tweaker')}
 				</span>
 			</a>
 
@@ -105,7 +107,7 @@
 					</svg>
 				</div>
 				<span class="text-[10px] font-sans font-medium tracking-wide mt-1.5 transition-colors duration-200 { $page.url.pathname.startsWith('/settings') ? 'text-accent-cyan font-bold' : 'text-text-secondary group-hover:text-text-primary' }">
-					Settings
+					{locale.t('nav.settings')}
 				</span>
 			</a>
 		</nav>
@@ -141,3 +143,68 @@
 		{@render children()}
 	</main>
 </div>
+
+<!-- Custom Material Design 3 Dialog / Modal popup -->
+{#if dialog.isOpen}
+	<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300">
+		<div 
+			class="w-full max-w-sm bg-bg-card rounded-[28px] p-6 shadow-2xl border border-border-default flex flex-col gap-4 transform transition-all duration-300 scale-100 animate-in fade-in zoom-in-95"
+			role="alertdialog"
+			aria-modal="true"
+			aria-labelledby="dialog-title"
+			aria-describedby="dialog-message"
+		>
+			<!-- Dialog Header -->
+			<div class="flex items-center gap-3">
+				{#if dialog.type === 'error'}
+					<div class="p-2 rounded-full bg-accent-red/10 text-accent-red">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"/>
+							<line x1="12" x2="12" y1="8" y2="12"/>
+							<line x1="12" x2="12.01" y1="16" y2="16"/>
+						</svg>
+					</div>
+				{:else if dialog.type === 'warning'}
+					<div class="p-2 rounded-full bg-accent-amber/10 text-accent-amber">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+							<line x1="12" x2="12" y1="9" y2="13"/>
+							<line x1="12" x2="12.01" y1="17" y2="17"/>
+						</svg>
+					</div>
+				{:else if dialog.type === 'success'}
+					<div class="p-2 rounded-full bg-accent-emerald/10 text-accent-emerald">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+							<polyline points="22 4 12 14.01 9 11.01"/>
+						</svg>
+					</div>
+				{:else}
+					<div class="p-2 rounded-full bg-accent-cyan/10 text-accent-cyan">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="10"/>
+							<line x1="12" x2="12" y1="16" y2="12"/>
+							<line x1="12" x2="12.01" y1="8" y2="8"/>
+						</svg>
+					</div>
+				{/if}
+				<h3 id="dialog-title" class="text-lg font-normal text-text-primary leading-none">{dialog.title}</h3>
+			</div>
+
+			<!-- Dialog Message -->
+			<div id="dialog-message" class="text-xs text-text-secondary leading-relaxed whitespace-pre-line px-1">
+				{dialog.message}
+			</div>
+
+			<!-- Dialog Actions -->
+			<div class="flex justify-end gap-2 mt-2">
+				<button 
+					onclick={() => dialog.close()}
+					class="px-5 py-2 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200 bg-accent-cyan text-bg-primary hover:opacity-90 shadow-sm"
+				>
+					Dismiss
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
