@@ -16,10 +16,11 @@
 		...restProps
 	}: CardProps = $props();
 
+	// Material Design 3 Card styling: borderless, tonal backgrounds, extreme rounded corners
 	const variantClasses: Record<string, string> = {
-		default: 'bg-bg-card border border-border-default rounded-[var(--radius-card)] shadow-[var(--shadow-card)]',
-		glass: 'glass-card',
-		interactive: 'glass-card transition-all duration-200 ease-[var(--ease-smooth)] hover:border-border-active hover:shadow-[var(--shadow-glow-cyan)] hover:-translate-y-0.5 cursor-pointer',
+		default: 'bg-bg-card rounded-[var(--radius-card)] shadow-[var(--shadow-card)]',
+		glass: 'bg-bg-card/90 backdrop-blur-md rounded-[var(--radius-card)] shadow-[var(--shadow-card)]',
+		interactive: 'bg-bg-card rounded-[var(--radius-card)] shadow-[var(--shadow-card)] transition-all duration-200 ease-[var(--ease-smooth)] hover:bg-bg-card-hover hover:scale-[1.01] cursor-pointer',
 	};
 </script>
 
