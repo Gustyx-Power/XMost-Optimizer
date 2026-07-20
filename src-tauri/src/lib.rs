@@ -1,6 +1,7 @@
 mod system;
 mod memory;
 mod tweaker;
+mod gpu;
 use system::{HardwareInfo, SystemMonitor, SystemStats};
 use memory::{AutoPurger, purge_standby_list};
 use tauri::State;
@@ -60,6 +61,16 @@ fn apply_core_parking_disable() -> Result<String, String> {
     tweaker::disable_core_parking()
 }
 
+#[tauri::command]
+fn fetch_hags_status() -> Result<bool, String> {
+    gpu::fetch_hags_status()
+}
+
+#[tauri::command]
+fn apply_hags_setting(enabled: bool) -> Result<String, String> {
+    gpu::apply_hags_setting(enabled)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -78,7 +89,8 @@ pub fn run() {
     .invoke_handler(tauri::generate_handler![
         get_hardware_info, get_system_stats,
         purge_memory_now, set_auto_purge_threshold, toggle_auto_purge, get_auto_purge_state,
-        apply_ultimate_power_plan, apply_core_parking_disable
+        apply_ultimate_power_plan, apply_core_parking_disable,
+        fetch_hags_status, apply_hags_setting
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

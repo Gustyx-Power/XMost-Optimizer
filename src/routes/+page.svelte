@@ -40,6 +40,10 @@
 			purgeThresholdMb = threshold;
 		}).catch(console.error);
 
+		invoke('fetch_hags_status').then((res) => {
+			hagsEnabled = res as boolean;
+		}).catch(console.error);
+
 		const interval = setInterval(async () => {
 			try {
 				stats = (await invoke('get_system_stats')) as SystemStats;
@@ -113,6 +117,25 @@
 			alert("Failed to disable core parking.\nError: " + e);
 		} finally {
 			isTweakingCore = false;
+		}
+	}
+
+	let hagsEnabled = $state(false);
+	let isTweakingHags = $state(false);
+
+	async function toggleHags() {
+		if (isTweakingHags) return;
+		isTweakingHags = true;
+		const nextState = !hagsEnabled;
+		try {
+			const res = await invoke('apply_hags_setting', { enabled: nextState });
+			hagsEnabled = nextState;
+			alert(res + "\n\nA system restart is required for changes to take effect.");
+		} catch (e) {
+			console.error(e);
+			alert("Failed to toggle HAGS.\nError: " + e);
+		} finally {
+			isTweakingHags = false;
 		}
 	}
 </script>
@@ -250,6 +273,38 @@
 						<Button variant="outline" class="w-full" onclick={disableCoreParking} disabled={isTweakingCore}>
 							{isTweakingCore ? "Applying..." : "Disable CPU Core Parking"}
 						</Button>
+					</div>
+				</div>
+			</Card>
+
+			<!-- GPU Bridge -->
+			<Card variant="default" class="p-6 space-y-4 mt-6 border border-accent-emerald/20">
+				<div class="flex justify-between items-center">
+					<h2 class="text-lg font-semibold text-text-primary">GPU Bridge</h2>
+					<Badge variant="outline" class="border-accent-emerald text-accent-emerald bg-accent-emerald/10">
+						MODULE 4
+					</Badge>
+				</div>
+				<Separator />
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+					<div class="space-y-3">
+						<div>
+							<h3 class="text-sm font-medium text-text-primary">Hardware-Accelerated GPU Scheduling (HAGS)</h3>
+							<p class="text-xs text-text-muted mt-1">Reduces latency and improves performance by allowing the graphics card to manage its own memory.</p>
+						</div>
+					</div>
+					
+					<div class="flex flex-col space-y-3 md:items-end">
+						<div class="flex items-center gap-4">
+							<span class="text-sm font-mono {hagsEnabled ? 'text-accent-emerald' : 'text-text-muted'}">
+								{hagsEnabled ? 'ENABLED' : 'DISABLED'}
+							</span>
+							<Button variant={hagsEnabled ? "outline" : "default"} onclick={toggleHags} disabled={isTweakingHags}>
+								{isTweakingHags ? "Applying..." : hagsEnabled ? "Disable HAGS" : "Enable HAGS"}
+							</Button>
+						</div>
+						<span class="text-[10px] text-orange-400 uppercase tracking-wider font-semibold">⚠ Reboot Required</span>
 					</div>
 				</div>
 			</Card>
