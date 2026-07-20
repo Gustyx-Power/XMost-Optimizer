@@ -14,17 +14,25 @@
 	}
 
 	const colorClasses: Record<ProgressColor, string> = {
-		cyan: 'bg-accent-cyan shadow-[0_0_8px_rgba(56,189,248,0.4)]',
-		emerald: 'bg-accent-emerald shadow-[0_0_8px_rgba(52,211,153,0.4)]',
-		amber: 'bg-accent-amber shadow-[0_0_8px_rgba(251,191,36,0.4)]',
-		red: 'bg-accent-red shadow-[0_0_8px_rgba(248,113,113,0.4)]',
-		purple: 'bg-accent-purple shadow-[0_0_8px_rgba(167,139,250,0.4)]',
+		cyan: 'bg-accent-cyan',
+		emerald: 'bg-accent-emerald',
+		amber: 'bg-accent-amber',
+		red: 'bg-accent-red',
+		purple: 'bg-accent-purple',
+	};
+
+	const trackClasses: Record<ProgressColor, string> = {
+		cyan: 'bg-accent-cyan/15',
+		emerald: 'bg-accent-emerald/15',
+		amber: 'bg-accent-amber/15',
+		red: 'bg-accent-red/15',
+		purple: 'bg-accent-purple/15',
 	};
 
 	const sizeClasses: Record<string, string> = {
-		sm: 'h-1',
-		md: 'h-2',
-		lg: 'h-3',
+		sm: 'h-2',
+		md: 'h-3.5',
+		lg: 'h-5',
 	};
 
 	let {
@@ -40,10 +48,11 @@
 	let percentage = $derived(Math.min(100, Math.max(0, (value / max) * 100)));
 </script>
 
-<div class={cn('flex items-center gap-3', className)} {...restProps}>
+<div class={cn('flex items-center gap-3 w-full', className)} {...restProps}>
 	<div
 		class={cn(
-			'relative w-full overflow-hidden rounded-full bg-bg-card',
+			'relative w-full overflow-hidden rounded-full',
+			trackClasses[color],
 			sizeClasses[size]
 		)}
 		role="progressbar"
@@ -60,7 +69,7 @@
 		></div>
 	</div>
 	{#if showLabel}
-		<span class="text-data text-xs text-text-secondary min-w-[3ch] text-right">
+		<span class="text-data text-xs text-text-secondary min-w-[4ch] text-right font-medium">
 			{Math.round(percentage)}%
 		</span>
 	{/if}
