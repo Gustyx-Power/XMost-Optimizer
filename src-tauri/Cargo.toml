@@ -1,11 +1,11 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
-edition = "2021"
+name = "xmost"
+version = "1.0.0"
+description = "Optimizer For Games in Windows"
+authors = ["GustyxPower"]
+license = "MIT"
+repository = "https://github.com/Gustyx-Power/XMost-Optimizer.git"
+edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
