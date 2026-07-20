@@ -1,22 +1,37 @@
 use std::process::Command;
 
 pub fn enable_ultimate_power_plan() -> Result<String, String> {
-    // Duplicate the Ultimate Performance GUID
-    // Ignore errors for this step because it might already be duplicated
+    // 1. Try to duplicate the Ultimate Performance GUID
     let _ = Command::new("powercfg")
         .args(["-duplicatescheme", "e9a42b02-d5df-448d-aa00-03f14749eb61"])
         .output();
         
-    // Now set it as active
-    let output = Command::new("powercfg")
+    // 2. Try to activate Ultimate Performance
+    let act_ult = Command::new("powercfg")
         .args(["-setactive", "e9a42b02-d5df-448d-aa00-03f14749eb61"])
+        .output();
+
+    if let Ok(ref output) = act_ult {
+        if output.status.success() {
+            return Ok("Ultimate Performance Power Plan applied successfully.".into());
+        }
+    }
+
+    // 3. Fallback: Duplicate and activate High Performance plan (8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
+    let _ = Command::new("powercfg")
+        .args(["-duplicatescheme", "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"])
+        .output();
+        
+    let act_high = Command::new("powercfg")
+        .args(["-setactive", "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"])
         .output()
         .map_err(|e| e.to_string())?;
 
-    if output.status.success() {
-        Ok("Ultimate Performance Power Plan applied successfully.".into())
+    if act_high.status.success() {
+        Ok("Ultimate Performance is not supported on this Windows configuration. Universal High Performance Power Plan has been applied instead.".into())
     } else {
-        Err(String::from_utf8_lossy(&output.stderr).to_string())
+        let stderr = String::from_utf8_lossy(&act_high.stderr).to_string();
+        Err(format!("Error: {}", stderr.trim()))
     }
 }
 

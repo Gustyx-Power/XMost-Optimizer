@@ -9,7 +9,6 @@ use windows::Win32::Security::{
 };
 use windows::Win32::System::Threading::{GetCurrentProcess, OpenProcessToken};
 use windows::Win32::System::SystemInformation::{GlobalMemoryStatusEx, MEMORYSTATUSEX};
-use std::ffi::c_void;
 use std::mem;
 
 use std::sync::{Arc, Mutex};
