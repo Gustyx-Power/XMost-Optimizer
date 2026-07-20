@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { invoke } from '@tauri-apps/api/core';
 	import { Card } from '$lib/components/ui/card';
+	import { locale } from '$lib/locale.svelte';
 
 	// Memory Metrics
 	let standbyListMb = $state(0);
@@ -137,14 +138,14 @@
 </script>
 
 <svelte:head>
-	<title>Memory Orchestrator - XMost Optimizer</title>
+	<title>{locale.t('memory.title')} - XMost Optimizer</title>
 </svelte:head>
 
 <div class="max-w-7xl mx-auto space-y-8 font-sans">
 	<!-- MD3 Header -->
 	<header class="pb-2 border-b border-white/[0.02]">
-		<h1 class="text-3xl font-normal tracking-tight text-text-primary">Memory Orchestrator</h1>
-		<p class="text-text-secondary text-xs mt-1">Real-time memory management and system timer optimization</p>
+		<h1 class="text-3xl font-bold tracking-tight text-text-primary">{locale.t('memory.title')}</h1>
+		<p class="text-text-secondary text-xs mt-1">{locale.t('memory.subtitle')}</p>
 	</header>
 
 	<!-- Grid Layout for Cards -->
@@ -153,9 +154,9 @@
 		<!-- Card 1: Advanced Auto-Purge Engine -->
 		<Card class="p-6 space-y-6 bg-bg-card rounded-3xl shadow-sm">
 			<div class="flex items-center justify-between">
-				<h2 class="text-xl font-normal text-text-primary">Advanced Auto-Purge Engine</h2>
+				<h2 class="text-xl font-normal text-text-primary">{locale.t('memory.auto_purge.title')}</h2>
 				<div class="flex items-center gap-3">
-					<span class="text-xs text-text-secondary uppercase tracking-wider font-semibold font-mono">{autoPurgeEnabled ? 'Active' : 'Inactive'}</span>
+					<span class="text-xs text-text-secondary uppercase tracking-wider font-semibold font-mono">{autoPurgeEnabled ? locale.t('common.enabled') : locale.t('common.disabled')}</span>
 					<!-- MD3 Switch toggle -->
 					<button
 						onclick={toggleAutoPurge}
@@ -175,7 +176,7 @@
 				<!-- Standby Threshold -->
 				<div class="space-y-2">
 					<label for="standby-threshold" class="flex items-center justify-between text-sm text-text-secondary font-medium">
-						<span>Standby list size is at least</span>
+						<span>{locale.t('memory.auto_purge.threshold_standby')}</span>
 						<span class="font-mono text-accent-cyan font-bold">{standbyListMb} MB</span>
 					</label>
 					<input
@@ -188,13 +189,13 @@
 						step="256"
 						class="w-full rounded-full px-4 py-2 bg-bg-primary-end border border-border-default hover:border-border-active transition-all focus:outline-none focus:ring-2 focus:ring-accent-cyan text-text-primary font-mono"
 					/>
-					<p class="text-[11px] text-text-muted">Current standby list size: {standbyListMb} MB (estimated)</p>
+					<p class="text-[11px] text-text-muted">{locale.t('memory.standby.title')}: {standbyListMb} MB</p>
 				</div>
 
 				<!-- Free Memory Threshold -->
 				<div class="space-y-2">
 					<label for="free-memory-threshold" class="flex items-center justify-between text-sm text-text-secondary font-medium">
-						<span>Free memory is lower than</span>
+						<span>{locale.t('memory.auto_purge.threshold_avail')}</span>
 						<span class="font-mono text-accent-cyan font-bold">{freeMemoryMb} MB</span>
 					</label>
 					<input
@@ -207,17 +208,17 @@
 						step="128"
 						class="w-full rounded-full px-4 py-2 bg-bg-primary-end border border-border-default hover:border-border-active transition-all focus:outline-none focus:ring-2 focus:ring-accent-cyan text-text-primary font-mono"
 					/>
-					<p class="text-[11px] text-text-muted">Current free memory size: {freeMemoryMb} MB</p>
+					<p class="text-[11px] text-text-muted">{locale.t('memory.free.title')}: {freeMemoryMb} MB</p>
 				</div>
 
 				<!-- Real-time Stats -->
 				<div class="grid grid-cols-2 gap-4 pt-2">
 					<div class="rounded-2xl p-4 bg-bg-primary-end border border-border-default">
-						<p class="text-xs text-text-secondary font-medium">Available</p>
+						<p class="text-xs text-text-secondary font-medium">{locale.t('common.available')}</p>
 						<p class="text-lg font-normal text-text-primary mt-1 font-mono tracking-tight">{availableMemoryMb} MB</p>
 					</div>
 					<div class="rounded-2xl p-4 bg-bg-primary-end border border-border-default">
-						<p class="text-xs text-text-secondary font-medium">Total</p>
+						<p class="text-xs text-text-secondary font-medium">{locale.t('common.total')}</p>
 						<p class="text-lg font-normal text-text-primary mt-1 font-mono tracking-tight">{totalMemoryMb} MB</p>
 					</div>
 				</div>
@@ -227,9 +228,9 @@
 		<!-- Card 2: System Timer Resolution -->
 		<Card class="p-6 space-y-6 bg-bg-card rounded-3xl shadow-sm">
 			<div class="flex items-center justify-between">
-				<h2 class="text-xl font-normal text-text-primary">System Timer Resolution</h2>
+				<h2 class="text-xl font-normal text-text-primary">{locale.t('memory.timer.title')}</h2>
 				<div class="flex items-center gap-3">
-					<span class="text-xs text-text-secondary uppercase tracking-wider font-semibold font-mono">{timerResolutionEnabled ? 'Active' : 'Inactive'}</span>
+					<span class="text-xs text-text-secondary uppercase tracking-wider font-semibold font-mono">{timerResolutionEnabled ? locale.t('common.enabled') : locale.t('common.disabled')}</span>
 					<!-- MD3 Switch toggle -->
 					<button
 						onclick={toggleTimerResolution}
@@ -248,14 +249,14 @@
 			<div class="space-y-4">
 				<!-- Current Resolution Display -->
 				<div class="rounded-2xl p-4 border border-accent-cyan/15 bg-bg-primary-end">
-					<p class="text-xs text-text-secondary font-medium mb-1">Current Timer Resolution</p>
+					<p class="text-xs text-text-secondary font-medium mb-1">{locale.t('memory.timer.current')}</p>
 					<p class="text-3xl font-normal text-accent-cyan font-mono tracking-tight">{currentTimerResolutionMs.toFixed(2)} ms</p>
 				</div>
 
 				<!-- Wanted Resolution Input -->
 				<div class="space-y-2">
 					<label for="wanted-resolution" class="text-sm text-text-secondary font-medium">
-						Wanted Timer Resolution (ms)
+						{locale.t('memory.timer.target')} (ms)
 					</label>
 					<input
 						id="wanted-resolution"
@@ -267,7 +268,7 @@
 						class="w-full rounded-full px-4 py-2 bg-bg-primary-end border border-border-default hover:border-border-active transition-all focus:outline-none focus:ring-2 focus:ring-accent-cyan text-text-primary font-mono disabled:opacity-50"
 						disabled={!timerResolutionEnabled}
 					/>
-					<p class="text-[11px] text-text-muted">Lower values = higher precision (more CPU usage)</p>
+					<p class="text-[11px] text-text-muted">{locale.t('memory.timer.desc')}</p>
 				</div>
 
 				<!-- Windows 11 Global Timer Requests -->
@@ -288,13 +289,13 @@
 
 		<!-- Card 3: Memory Paging & Polling -->
 		<Card class="p-6 space-y-6 lg:col-span-2 bg-bg-card rounded-3xl shadow-sm">
-			<h2 class="text-xl font-normal text-text-primary">Memory Paging & Polling</h2>
+			<h2 class="text-xl font-normal text-text-primary">{locale.t('memory.pagefile.title')}</h2>
 
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				<!-- Pagefile Usage -->
 				<div class="space-y-3">
 					<div class="flex items-center justify-between">
-						<p class="text-sm text-text-secondary font-medium">Pagefile Usage</p>
+						<p class="text-sm text-text-secondary font-medium">{locale.t('memory.pagefile.usage')}</p>
 						<p class="text-sm font-mono text-accent-purple font-bold">{pagefilePercent.toFixed(1)}%</p>
 					</div>
 					
@@ -307,8 +308,8 @@
 					</div>
 					
 					<div class="flex justify-between text-xs text-text-secondary font-mono mt-1">
-						<span>{pagefileUsedMb} MB used</span>
-						<span>{pagefileTotalMb} MB total</span>
+						<span>{pagefileUsedMb} MB {locale.t('memory.pagefile.used').toLowerCase()}</span>
+						<span>{pagefileTotalMb} MB {locale.t('common.total').toLowerCase()}</span>
 					</div>
 				</div>
 
