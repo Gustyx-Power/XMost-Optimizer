@@ -1,5 +1,6 @@
 mod system;
 mod memory;
+mod tweaker;
 use system::{HardwareInfo, SystemMonitor, SystemStats};
 use memory::{AutoPurger, purge_standby_list};
 use tauri::State;
@@ -49,6 +50,16 @@ fn get_auto_purge_state(state: State<'_, AutoPurger>) -> (bool, u64) {
     (s.enabled, s.threshold_mb)
 }
 
+#[tauri::command]
+fn apply_ultimate_power_plan() -> Result<String, String> {
+    tweaker::enable_ultimate_power_plan()
+}
+
+#[tauri::command]
+fn apply_core_parking_disable() -> Result<String, String> {
+    tweaker::disable_core_parking()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -66,7 +77,8 @@ pub fn run() {
     .manage(AutoPurger::new())
     .invoke_handler(tauri::generate_handler![
         get_hardware_info, get_system_stats,
-        purge_memory_now, set_auto_purge_threshold, toggle_auto_purge, get_auto_purge_state
+        purge_memory_now, set_auto_purge_threshold, toggle_auto_purge, get_auto_purge_state,
+        apply_ultimate_power_plan, apply_core_parking_disable
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

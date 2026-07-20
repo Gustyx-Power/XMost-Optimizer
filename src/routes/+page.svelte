@@ -85,6 +85,36 @@
 			}
 		}
 	}
+	let isTweakingPower = $state(false);
+	let isTweakingCore = $state(false);
+
+	async function applyUltimatePower() {
+		if (isTweakingPower) return;
+		isTweakingPower = true;
+		try {
+			const res = await invoke('apply_ultimate_power_plan');
+			alert(res as string);
+		} catch (e) {
+			console.error(e);
+			alert("Failed to apply power plan.\nError: " + e);
+		} finally {
+			isTweakingPower = false;
+		}
+	}
+
+	async function disableCoreParking() {
+		if (isTweakingCore) return;
+		isTweakingCore = true;
+		try {
+			const res = await invoke('apply_core_parking_disable');
+			alert(res as string);
+		} catch (e) {
+			console.error(e);
+			alert("Failed to disable core parking.\nError: " + e);
+		} finally {
+			isTweakingCore = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -186,6 +216,39 @@
 						</Button>
 						<Button variant="glow" onclick={purgeMemory} disabled={isPurging}>
 							{isPurging ? "Purging..." : "1-Click Clean Now"}
+						</Button>
+					</div>
+				</div>
+			</Card>
+
+			<!-- Core & OS Tweaker -->
+			<Card variant="default" class="p-6 space-y-4 mt-6 border border-accent-cyan/20">
+				<div class="flex justify-between items-center">
+					<h2 class="text-lg font-semibold text-text-primary">Core & OS Tweaker</h2>
+					<Badge variant="outline" class="border-accent-cyan text-accent-cyan bg-accent-cyan/10">
+						MODULE 3
+					</Badge>
+				</div>
+				<Separator />
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div class="space-y-3">
+						<div>
+							<h3 class="text-sm font-medium text-text-primary">Ultimate Performance</h3>
+							<p class="text-xs text-text-muted mt-1">Injects and activates the hidden Windows Ultimate Performance power scheme to prevent aggressive downclocking.</p>
+						</div>
+						<Button variant="outline" class="w-full" onclick={applyUltimatePower} disabled={isTweakingPower}>
+							{isTweakingPower ? "Applying..." : "Activate Ultimate Power Plan"}
+						</Button>
+					</div>
+					
+					<div class="space-y-3">
+						<div>
+							<h3 class="text-sm font-medium text-text-primary">Disable Core Parking</h3>
+							<p class="text-xs text-text-muted mt-1">Forces all CPU cores to remain active during operation by overriding powercfg parking indexes.</p>
+						</div>
+						<Button variant="outline" class="w-full" onclick={disableCoreParking} disabled={isTweakingCore}>
+							{isTweakingCore ? "Applying..." : "Disable CPU Core Parking"}
 						</Button>
 					</div>
 				</div>
