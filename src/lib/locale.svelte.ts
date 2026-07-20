@@ -177,6 +177,30 @@ const translations: Record<string, any> = {
         status_enabled: "Game Mode enabled successfully.",
         status_disabled: "Game Mode disabled successfully.",
       }
+    },
+    onboarding: {
+      welcome: "Welcome to XMost",
+      subtitle: "Configure your ultimate performance workspace",
+      get_started: "Get Started",
+      next: "Next",
+      back: "Back",
+      steps: {
+        monitor: {
+          title: "System Monitor",
+          desc: "Real-time hardware telemetry.",
+          detail: "Track CPU, GPU, and RAM usage with high-precision measurements. Keep an eye on system health while gaming."
+        },
+        memory: {
+          title: "Memory Orchestrator",
+          desc: "Prevent stutters with standby list purging.",
+          detail: "Instantly reclaim system memory. Purge clogged standby lists dynamically to keep game performance buttery-smooth."
+        },
+        tweaker: {
+          title: "OS Tweaker",
+          desc: "Unlock performance & disable parking.",
+          detail: "Directly customize Windows scheduler priorities. Disable CPU core parking and activate the hidden Ultimate Performance power plan."
+        }
+      }
     }
   },
   id: {
@@ -356,6 +380,30 @@ const translations: Record<string, any> = {
         btn_disable: "Nonaktifkan Game Mode",
         status_enabled: "Game Mode berhasil diaktifkan.",
         status_disabled: "Game Mode berhasil dinonaktifkan.",
+      }
+    },
+    onboarding: {
+      welcome: "Selamat Datang di XMost",
+      subtitle: "Konfigurasikan ruang kerja kinerja maksimal Anda",
+      get_started: "Mulai Sekarang",
+      next: "Lanjut",
+      back: "Kembali",
+      steps: {
+        monitor: {
+          title: "Sistem Monitor",
+          desc: "Telemetri perangkat keras waktu nyata.",
+          detail: "Pantau penggunaan CPU, GPU, dan RAM dengan pengukuran presisi tinggi. Amati kesehatan sistem saat bermain game."
+        },
+        memory: {
+          title: "Memori Orchestrator",
+          desc: "Cegah stutter dengan pembersihan daftar standby.",
+          detail: "Ambil alih memori sistem secara instan. Bersihkan daftar standby yang tersumbat secara dinamis agar kinerja game tetap lancar."
+        },
+        tweaker: {
+          title: "OS Tweaker",
+          desc: "Buka performa & nonaktifkan parking.",
+          detail: "Kustomisasi prioritas penjadwal Windows secara langsung. Nonaktifkan CPU core parking dan aktifkan skema daya Ultimate Performance tersembunyi."
+        }
       }
     }
   }
