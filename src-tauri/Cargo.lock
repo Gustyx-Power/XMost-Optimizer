@@ -69,13 +69,14 @@ name = "app"
 version = "0.1.0"
 dependencies = [
  "log",
+ "ntapi",
  "serde",
  "serde_json",
  "sysinfo",
  "tauri",
  "tauri-build",
  "tauri-plugin-log",
- "windows 0.61.3",
+ "windows 0.62.2",
  "wmi",
 ]
 

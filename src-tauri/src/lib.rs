@@ -1,5 +1,7 @@
 mod system;
+mod memory;
 use system::{HardwareInfo, SystemMonitor, SystemStats};
+use memory::{AutoPurger, purge_standby_list};
 use tauri::State;
 
 #[tauri::command]
@@ -21,6 +23,32 @@ fn get_system_stats(state: State<'_, SystemMonitor>) -> SystemStats {
     }
 }
 
+#[tauri::command]
+fn purge_memory_now() -> Result<(), String> {
+    log::info!("Manual memory purge requested.");
+    purge_standby_list()
+}
+
+#[tauri::command]
+fn set_auto_purge_threshold(state: State<'_, AutoPurger>, mb: u64) {
+    let mut s = state.state.lock().unwrap();
+    s.threshold_mb = mb;
+    log::info!("Auto-purge threshold set to {} MB", mb);
+}
+
+#[tauri::command]
+fn toggle_auto_purge(state: State<'_, AutoPurger>, enabled: bool) {
+    let mut s = state.state.lock().unwrap();
+    s.enabled = enabled;
+    log::info!("Auto-purge enabled: {}", enabled);
+}
+
+#[tauri::command]
+fn get_auto_purge_state(state: State<'_, AutoPurger>) -> (bool, u64) {
+    let s = state.state.lock().unwrap();
+    (s.enabled, s.threshold_mb)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -35,7 +63,11 @@ pub fn run() {
       Ok(())
     })
     .manage(SystemMonitor::new())
-    .invoke_handler(tauri::generate_handler![get_hardware_info, get_system_stats])
+    .manage(AutoPurger::new())
+    .invoke_handler(tauri::generate_handler![
+        get_hardware_info, get_system_stats,
+        purge_memory_now, set_auto_purge_threshold, toggle_auto_purge, get_auto_purge_state
+    ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
