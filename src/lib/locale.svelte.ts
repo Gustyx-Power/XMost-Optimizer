@@ -35,6 +35,10 @@ const translations: Record<string, any> = {
         dark: "Dark Mode",
         light: "Light Mode",
       },
+      startup: {
+        title: "Run on Startup",
+        description: "Automatically launch XMost Optimizer when you log in to Windows.",
+      },
       about: {
         title: "About XMost Optimizer",
         version: "Version",
@@ -176,6 +180,14 @@ const translations: Record<string, any> = {
         btn_disable: "Disable Game Mode",
         status_enabled: "Game Mode enabled successfully.",
         status_disabled: "Game Mode disabled successfully.",
+      },
+      temp: {
+        title: "Temporary Files",
+        desc: "Manage Windows temporary files safely.",
+        auto_clean: "Auto Clear Temp on Startup",
+        clean_now: "Clear Temp Now",
+        applying: "Cleaning...",
+        status_title: "Disk Cleanup",
       }
     },
     onboarding: {
@@ -238,6 +250,10 @@ const translations: Record<string, any> = {
         description: "Beralih antara warna mode terang dan gelap.",
         dark: "Mode Gelap",
         light: "Mode Terang",
+      },
+      startup: {
+        title: "Jalankan saat Startup",
+        description: "Buka XMost Optimizer secara otomatis saat Anda masuk ke Windows.",
       },
       about: {
         title: "Tentang XMost Optimizer",
@@ -380,6 +396,14 @@ const translations: Record<string, any> = {
         btn_disable: "Nonaktifkan Game Mode",
         status_enabled: "Game Mode berhasil diaktifkan.",
         status_disabled: "Game Mode berhasil dinonaktifkan.",
+      },
+      temp: {
+        title: "File Sementara (Temp)",
+        desc: "Kelola file sementara Windows secara aman.",
+        auto_clean: "Otomatis Bersihkan Temp saat Startup",
+        clean_now: "Bersihkan Temp Sekarang",
+        applying: "Membersihkan...",
+        status_title: "Disk Cleanup",
       }
     },
     onboarding: {
