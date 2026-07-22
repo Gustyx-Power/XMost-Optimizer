@@ -1,6 +1,32 @@
 <script lang="ts">
 	import { locale } from '$lib/locale.svelte';
 	import { Card } from '$lib/components/ui/card';
+	import { enable, isEnabled, disable } from '@tauri-apps/plugin-autostart';
+	import { onMount } from 'svelte';
+
+	let autostartEnabled = $state(false);
+
+	onMount(async () => {
+		try {
+			autostartEnabled = await isEnabled();
+		} catch (e) {
+			console.error("Failed to check autostart status", e);
+		}
+	});
+
+	async function toggleAutostart() {
+		try {
+			if (autostartEnabled) {
+				await disable();
+				autostartEnabled = false;
+			} else {
+				await enable();
+				autostartEnabled = true;
+			}
+		} catch (e) {
+			console.error("Failed to toggle autostart", e);
+		}
+	}
 </script>
 
 <div class="max-w-7xl mx-auto flex flex-col gap-6 animate-in fade-in duration-300">
@@ -74,6 +100,40 @@
 		<p class="text-xs text-text-muted italic leading-relaxed">
 			Tip: Use the theme switch toggle button in the bottom-left navigation rail to swap between Light and Dark mode instantly.
 		</p>
+	</Card>
+
+	<!-- Startup Selection Card -->
+	<Card variant="interactive" class="p-6 bg-bg-card rounded-[24px] shadow-sm flex flex-col gap-4">
+		<div class="flex items-start justify-between">
+			<div class="flex flex-col gap-1 w-[calc(100%-36px)]">
+				<h3 class="text-base font-bold text-text-primary">
+					{locale.t('settings.startup.title')}
+				</h3>
+				<p class="text-xs text-text-secondary leading-relaxed">
+					{locale.t('settings.startup.description')}
+				</p>
+			</div>
+			<div class="p-2 rounded-2xl bg-emerald-500/10 text-emerald-500 shrink-0">
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+					<path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+					<line x1="12" y1="2" x2="12" y2="12" />
+				</svg>
+			</div>
+		</div>
+
+		<div class="flex items-center justify-between mt-2 p-3 bg-white/5 rounded-[16px]">
+			<span class="text-xs font-medium text-text-primary">
+				{autostartEnabled ? locale.t('common.enabled') : locale.t('common.disabled')}
+			</span>
+			<button
+				onclick={toggleAutostart}
+				class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none {autostartEnabled ? 'bg-emerald-500' : 'bg-white/10'}"
+			>
+				<span
+					class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform {autostartEnabled ? 'translate-x-6' : 'translate-x-1'}"
+				></span>
+			</button>
+		</div>
 	</Card>
 
 	<!-- About Application Card -->
