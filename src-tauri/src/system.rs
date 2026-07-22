@@ -385,17 +385,20 @@ fn fetch_hardware_info() -> Result<HardwareInfo, String> {
 
     // GPU Query
     let gpus: Vec<Win32_VideoController> = wmi_con.query().unwrap_or_default();
-    let gpu_first = gpus.into_iter().next();
     
-    let gpu = gpu_first.as_ref()
-        .map(|g| g.name.trim().to_string())
-        .unwrap_or_else(|| "Unknown GPU".into());
-    let gpu_codename = detect_gpu_codename(&gpu);
-    let gpu_process = detect_gpu_process(&gpu);
+    let mut gpu_names = Vec::new();
+    let mut gpu_codenames = Vec::new();
+    let mut gpu_processes = Vec::new();
+    let mut gpu_vrams = Vec::new();
+    let mut gpu_drivers = Vec::new();
 
-    let gpu_vram = gpu_first.as_ref()
-        .and_then(|g| g.adapter_ram)
-        .map(|r| {
+    for g in gpus {
+        let name = g.name.trim().to_string();
+        gpu_names.push(name.clone());
+        gpu_codenames.push(detect_gpu_codename(&name));
+        gpu_processes.push(detect_gpu_process(&name));
+
+        let vram = g.adapter_ram.map(|r| {
             let gb = r as f64 / 1024.0 / 1024.0 / 1024.0;
             if gb >= 1.0 {
                 format!("{:.0} GB", gb)
@@ -403,12 +406,23 @@ fn fetch_hardware_info() -> Result<HardwareInfo, String> {
                 let mb = r / 1024 / 1024;
                 format!("{} MB", mb)
             }
-        })
-        .unwrap_or_else(|| "Unknown".to_string());
+        }).unwrap_or_else(|| "Unknown".to_string());
+        gpu_vrams.push(vram);
 
-    let gpu_driver = gpu_first.as_ref()
-        .and_then(|g| g.driver_version.as_ref().map(|d| d.trim().to_string()))
-        .unwrap_or_else(|| "Unknown".to_string());
+        gpu_drivers.push(g.driver_version.as_ref().map(|d| d.trim().to_string()).unwrap_or_else(|| "Unknown".to_string()));
+    }
+
+    let (gpu, gpu_codename, gpu_vram, gpu_driver, gpu_process) = if gpu_names.is_empty() {
+        ("Unknown GPU".into(), "Unknown".into(), "Unknown".into(), "Unknown".into(), "Unknown".into())
+    } else {
+        (
+            gpu_names.join(" & "),
+            gpu_codenames.join(" & "),
+            gpu_vrams.join(" & "),
+            gpu_drivers.join(" & "),
+            gpu_processes.join(" & ")
+        )
+    };
 
     // Motherboard Query
     let boards: Vec<Win32_BaseBoard> = wmi_con.query().unwrap_or_default();

@@ -87,6 +87,16 @@ fn apply_hags_setting(enabled: bool) -> Result<String, String> {
     gpu::apply_hags_setting(enabled)
 }
 
+#[tauri::command]
+fn clear_temp_folder(app: tauri::AppHandle) -> Result<String, String> {
+    tweaker::clear_temp_folder(app)
+}
+
+#[tauri::command]
+fn get_temp_info() -> Result<tweaker::TempInfo, String> {
+    tweaker::get_temp_info()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -100,6 +110,7 @@ pub fn run() {
       }
       Ok(())
     })
+    .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, Some(vec![])))
     .manage(SystemMonitor::new())
     .manage(AutoPurger::new())
     .invoke_handler(tauri::generate_handler![
@@ -107,7 +118,7 @@ pub fn run() {
         purge_memory_now, set_auto_purge_config, toggle_auto_purge, get_auto_purge_state,
         get_memory_telemetry, get_pagefile_telemetry, get_timer_resolution_ms,
         apply_ultimate_power_plan, apply_core_parking_disable,
-        fetch_hags_status, apply_hags_setting
+        fetch_hags_status, apply_hags_setting, clear_temp_folder, get_temp_info
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

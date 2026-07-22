@@ -26,3 +26,4 @@ sysinfo = "0.36.1"
 wmi = "0.18.4"
 windows = { version = "0.62.2", features = ["Win32_System_Memory", "Win32_Foundation", "Win32_System_SystemInformation", "Win32_System_Performance", "Win32_Security", "Win32_System_Threading"] }
 ntapi = "0.4.3"
+tauri-plugin-autostart = "2.5.1"
