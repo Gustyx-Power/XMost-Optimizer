@@ -42,6 +42,38 @@
 	
 	let cpuHistory = $state<number[]>(Array(30).fill(0));
 	let memHistory = $state<number[]>(Array(30).fill(0));
+	
+	let currentGpuSlide = $state(0);
+
+	let gpuList = $derived.by(() => {
+		if (!hwInfo) return [];
+		
+		const names = hwInfo.gpu.split(' & ');
+		const codenames = hwInfo.gpu_codename.split(' & ');
+		const vrams = hwInfo.gpu_vram.split(' & ');
+		const drivers = hwInfo.gpu_driver.split(' & ');
+		const processes = hwInfo.gpu_process.split(' & ');
+		
+		let list = names.map((name, i) => ({
+			name: name.trim(),
+			codename: codenames[i] ? codenames[i].trim() : 'Unknown',
+			vram: vrams[i] ? vrams[i].trim() : 'Unknown',
+			driver: drivers[i] ? drivers[i].trim() : 'Unknown',
+			process: processes[i] ? processes[i].trim() : 'Unknown',
+		}));
+		
+		if (list.length === 1) {
+			list.push({
+				name: 'Unknown GPU (Not Detected)',
+				codename: 'N/A',
+				vram: 'N/A',
+				driver: 'N/A',
+				process: 'N/A'
+			});
+		}
+		
+		return list;
+	});
 
 	const GB = 1024 * 1024 * 1024;
 
@@ -150,45 +182,85 @@
 				<span class="text-[10px] font-mono text-text-muted">{locale.t('monitor.cpu.subtitle')}</span>
 			</Card>
 
-			<!-- GPU Card (CPU-Z Style info) -->
-			<Card variant="interactive" class="p-6 h-44 flex flex-col justify-between bg-bg-card rounded-3xl shadow-sm">
-				<div class="flex items-start justify-between w-full">
-					<div class="flex flex-col gap-1 w-[calc(100%-36px)]">
-						<span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">{locale.t('monitor.gpu.title')}</span>
-						
-						<!-- CPU-Z styled metrics -->
-						<div class="grid grid-cols-2 gap-x-3 gap-y-1 mt-1 text-xs font-mono">
-							<div class="flex flex-col col-span-2">
-								<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.name')}</span>
-								<span class="text-text-primary font-medium truncate" title={hwInfo.gpu}>{hwInfo.gpu}</span>
+			<!-- GPU Carousel Card -->
+			<Card variant="interactive" class="p-0 h-44 flex flex-col bg-bg-card rounded-3xl shadow-sm overflow-hidden relative group">
+				<div class="relative w-full h-full overflow-hidden">
+					<div class="flex transition-transform duration-300 ease-in-out w-full h-full" style="transform: translateX(-{currentGpuSlide * 100}%);">
+						{#each gpuList as gpu, i}
+							<div class="w-full h-full shrink-0 p-6 flex flex-col justify-between">
+								<div class="flex items-start justify-between w-full">
+									<div class="flex flex-col gap-1 w-[calc(100%-36px)]">
+										<span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">{locale.t('monitor.gpu.title')} {gpuList.length > 1 ? `#${i+1}` : ''}</span>
+										
+										<div class="grid grid-cols-2 gap-x-3 gap-y-1 mt-1 text-xs font-mono">
+											<div class="flex flex-col col-span-2">
+												<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.name')}</span>
+												<span class="text-text-primary font-medium truncate" title={gpu.name}>{gpu.name}</span>
+											</div>
+											<div class="flex flex-col">
+												<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.codename')}</span>
+												<span class="text-text-primary font-medium truncate" title={gpu.codename}>{gpu.codename}</span>
+											</div>
+											<div class="flex flex-col">
+												<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.technology')}</span>
+												<span class="text-text-primary font-medium">{gpu.process}</span>
+											</div>
+											<div class="flex flex-col">
+												<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.vram')}</span>
+												<span class="text-text-primary font-medium">{gpu.vram}</span>
+											</div>
+											<div class="flex flex-col">
+												<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.driver')}</span>
+												<span class="text-text-primary font-medium truncate" title={gpu.driver}>{gpu.driver}</span>
+											</div>
+										</div>
+									</div>
+									<div class="p-2 rounded-2xl bg-accent-amber/10 text-accent-amber shrink-0">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+											<rect x="2" y="5" width="20" height="14" rx="2" />
+											<path d="M6 9h4v6H6z" />
+											<path d="M14 9h4M14 12h4M14 15h4" />
+										</svg>
+									</div>
+								</div>
+								<span class="text-[10px] font-mono text-text-muted opacity-50">{locale.t('monitor.gpu.subtitle')}</span>
 							</div>
-							<div class="flex flex-col">
-								<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.codename')}</span>
-								<span class="text-text-primary font-medium truncate" title={hwInfo.gpu_codename}>{hwInfo.gpu_codename}</span>
-							</div>
-							<div class="flex flex-col">
-								<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.technology')}</span>
-								<span class="text-text-primary font-medium">{hwInfo.gpu_process}</span>
-							</div>
-							<div class="flex flex-col">
-								<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.vram')}</span>
-								<span class="text-text-primary font-medium">{hwInfo.gpu_vram}</span>
-							</div>
-							<div class="flex flex-col">
-								<span class="text-[9px] text-text-muted font-sans uppercase font-bold tracking-tight">{locale.t('monitor.gpu.driver')}</span>
-								<span class="text-text-primary font-medium truncate" title={hwInfo.gpu_driver}>{hwInfo.gpu_driver}</span>
-							</div>
-						</div>
-					</div>
-					<div class="p-2 rounded-2xl bg-accent-amber/10 text-accent-amber shrink-0">
-						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-							<rect x="2" y="5" width="20" height="14" rx="2" />
-							<path d="M6 9h4v6H6z" />
-							<path d="M14 9h4M14 12h4M14 15h4" />
-						</svg>
+						{/each}
 					</div>
 				</div>
-				<span class="text-[10px] font-mono text-text-muted">{locale.t('monitor.gpu.subtitle')}</span>
+				
+				<!-- Indicator Dots and Navigation -->
+				{#if gpuList.length > 1}
+					<div class="absolute bottom-4 left-6 flex gap-1.5 z-10">
+						{#each gpuList as _, i}
+							<button 
+								onclick={() => currentGpuSlide = i}
+								class="w-1.5 h-1.5 rounded-full transition-all duration-300 {currentGpuSlide === i ? 'bg-accent-amber w-3' : 'bg-text-primary/20 hover:bg-text-primary/40'}"
+								aria-label="Go to slide {i + 1}"
+							></button>
+						{/each}
+					</div>
+					
+					<!-- Left/Right Chevrons -->
+					<div class="absolute bottom-3 right-6 flex gap-2 z-10">
+						<button 
+							onclick={() => currentGpuSlide = Math.max(0, currentGpuSlide - 1)}
+							class="p-1 rounded-full bg-text-primary/5 text-text-muted hover:bg-text-primary/10 hover:text-text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none"
+							disabled={currentGpuSlide === 0}
+							aria-label="Previous GPU"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+						</button>
+						<button 
+							onclick={() => currentGpuSlide = Math.min(gpuList.length - 1, currentGpuSlide + 1)}
+							class="p-1 rounded-full bg-text-primary/5 text-text-muted hover:bg-text-primary/10 hover:text-text-primary transition-colors disabled:opacity-30 disabled:pointer-events-none"
+							disabled={currentGpuSlide === gpuList.length - 1}
+							aria-label="Next GPU"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+						</button>
+					</div>
+				{/if}
 			</Card>
 
 			<!-- RAM Brand Card (CPU-Z Style info) -->

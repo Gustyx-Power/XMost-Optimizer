@@ -2,6 +2,7 @@
 	import '../app.css';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import { invoke } from '@tauri-apps/api/core';
 	import { dialog } from '$lib/dialog.svelte';
 	import { locale } from '$lib/locale.svelte';
 	import { fade, fly } from 'svelte/transition';
@@ -22,6 +23,15 @@
 			isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 		}
 		applyTheme();
+
+		// Auto clean temp folder on startup if enabled
+		if (localStorage.getItem('auto_clean_temp') === 'true') {
+			invoke('clear_temp_folder').then((res) => {
+				console.log("Auto-cleaned Temp on startup:", res);
+			}).catch((err) => {
+				console.error("Auto-clean Temp failed:", err);
+			});
+		}
 
 		// Flow transitions: Splash (2s) -> Onboarding (if not completed) -> Main App
 		setTimeout(() => {
